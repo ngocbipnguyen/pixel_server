@@ -3,7 +3,7 @@ from typing import List
 from src.models.user_model import UserModel, ProfileModel
 from src.models.collection_model import CollectionModel
 from src.models.social_model import SocialModel
-from src.schemas.user import User
+from src.schemas.user import User, map_user
 
 class UserService:
 
@@ -12,14 +12,7 @@ class UserService:
 
     def create(self, user: User)-> User:
         
-        userModel = UserModel(uui = user.uui, 
-                              email = user.email, 
-                              name = user.name,
-                              url = user.url, 
-                              token =user.token,
-                              is_active = user.is_active,
-                              follow = user.follow
-                              )
+        userModel = map_user(user= user)
         
         return self.repo.create(userModel)
     

@@ -1,0 +1,21 @@
+from fastapi import FastAPI
+from src.api.v1.collection_router import collection_router
+from src.api.v1.pixel_router import pixel_router
+from src.api.v1.profile_router import profile_router
+from src.api.v1.social_router import social_router
+from src.api.v1.user_router import user_router
+from src.database.session import Base, engine
+
+app = FastAPI()
+
+Base.metadata.create_all(bind = engine)
+
+app.include_router(collection_router, "/v1")
+
+app.include_router(pixel_router, "/v1")
+
+app.include_router(profile_router, "/v1")
+
+app.include_router(social_router, "/v1")
+
+app.include_router(user_router, "/v1")
