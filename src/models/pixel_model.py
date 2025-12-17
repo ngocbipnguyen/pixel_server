@@ -20,7 +20,7 @@ class PixelModel(Base):
     collection_id = Column(String, ForeignKey("collection.id"))
     collection = relationship("CollectionModel", back_populates="pixels")
 
-    photo = relationship("PhotoModel", back_populates="pixel", cascade="all, delete")
+    photo = relationship("PhotoModel", back_populates="pixel",uselist=False, cascade="all, delete")
 
 
 class PhotoModel(Base):

@@ -9,9 +9,9 @@ class UserModel(Base):
 
     uui = Column(String, primary_key=True, default=lambda:str(uuid4()))
     email = Column(String, unique=True, nullable=False)
-    name = Column(String)
-    url = Column(String,nullable= False)
-    token = Column(String, nullable= False)
+    name = Column(String, nullable= False)
+    url = Column(String)
+    token = Column(String)
     timestamps = Column(BigInteger,default=lambda: int(time.time() * 1000))
     is_active = Column(Boolean, default= False)
     follow = Column(Boolean, default=False)
