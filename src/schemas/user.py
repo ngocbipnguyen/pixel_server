@@ -6,23 +6,30 @@ from src.models.user_model import ProfileModel, UserModel
 
 class Profile(BaseModel):
     uui: str
-    total_view: int
-    all_time_rank: int
-    month_rank: int
+    total_view: int | None = None
+    all_time_rank: int | None = None
+    month_rank: int | None = None
 
 class User(BaseModel):
-    uui: str
+    uui: str | None = None
     email: str
     name: str
     url: str| None = None
     token: str| None = None
-    timestamps: int
+    timestamps: int | None = None
     is_active: bool| None = None
     follow: bool| None = None
-    profile: Profile
+    profile: Profile | None = None
     socials: List[Social]| None = None
     collections: List[Collection]| None = None
 
+
+class UserParams(BaseModel):
+    uui: str | None = None
+    email: str | None = None
+
+class ProfileParams(BaseModel):
+    uui: str
 
 def map_profile(profile: Profile)-> ProfileModel:
     profileModel = profileModel(uui = profile.uui, 

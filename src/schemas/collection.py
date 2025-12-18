@@ -7,16 +7,19 @@ from src.models.pixel_model import PixelModel
 class Collection(BaseModel):
     id: str
     title: str
-    description: str
-    is_private: bool
-    media_count: int
-    videos_count: int
-    photos_count: int
-    timestamp_create: int
-    timestamp_update: int
+    description: str | None = None
+    is_private: bool | None = None
+    media_count: int | None = None
+    videos_count: int | None = None
+    photos_count: int | None = None
+    timestamp_create: int | None = None
+    timestamp_update: int | None = None
     uui: str
     pixels: List[Pixel] | None = None
 
+class CollectionParams(BaseModel):
+    id: str | None = None
+    uui: str | None = None
 
 def map_collection_to_model(collection: Collection) -> CollectionModel:
     db_collection = CollectionModel(

@@ -23,13 +23,13 @@ class UserModel(Base):
     socials = relationship("SocialModel",
                            back_populates="user",
                            cascade="all, delete-orphan")
-    collections = relationship("Collection_model", back_populates="user",cascade="all, delete-orphan")
+    collections = relationship("CollectionModel", back_populates="user",cascade="all, delete-orphan")
 
 
 
 
 class ProfileModel(Base):
-    __tablename = "profile"
+    __tablename__ = "profile"
 
     uui = Column(String, ForeignKey("users.uui"), primary_key=True)
     total_view = Column(BigInteger, default=0)

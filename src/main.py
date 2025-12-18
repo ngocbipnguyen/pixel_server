@@ -10,12 +10,12 @@ app = FastAPI()
 
 Base.metadata.create_all(bind = engine)
 
-app.include_router(collection_router, "/v1")
+app.include_router(collection_router, prefix="/v1")
 
-app.include_router(pixel_router, "/v1")
+app.include_router(pixel_router, prefix="/v1")
 
-app.include_router(profile_router, "/v1")
+app.include_router(profile_router, prefix="/v1")
 
-app.include_router(social_router, "/v1")
+app.include_router(social_router, prefix="/v1")
 
-app.include_router(user_router, "/v1")
+app.include_router(user_router, prefix="/v1")

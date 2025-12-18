@@ -8,20 +8,25 @@ class Photo(BaseModel):
     medium: str
     small: str
 
+class PhotoParams(BaseModel):
+    id: str
 
 class Pixel(BaseModel):
     id: str
-    type: str
-    width: int = 0
-    height: int = 0
-    avg_color: str
-    timestamps: int
-    is_favorite: bool = False
-    is_mark: bool = False
+    type: str | None = None
+    width: int | None = None
+    height: int | None = None
+    avg_color: str | None = None
+    timestamps: int | None = None
+    is_favorite: bool | None = None
+    is_mark: bool | None = None
 
     collection_id: str
     photo: Photo | None = None
 
+class PixelParams(BaseModel):
+    id: str | None = None
+    collection_id: str | None = None
 
 def map_pixel(pixel: Pixel, collection_id: str) -> PixelModel:
     db_pixel = PixelModel(

@@ -1,10 +1,9 @@
 from pydantic import BaseModel
-from .user import User
 from src.models.social_model import SocialModel
 
 class Social(BaseModel):
     id: str
-    name: str| None = None
+    name: str
     icon_url: str| None = None
     link: str| None = None
 
@@ -18,3 +17,8 @@ def map_social(social: Social)-> SocialModel:
                         link = social.link, 
                         uui = social.uui)
     return model
+
+
+class SocialParams(BaseModel):
+    id: str | None = None
+    uui: str | None = None
