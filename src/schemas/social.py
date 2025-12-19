@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from src.models.social_model import SocialModel
 
 class Social(BaseModel):
-    id: str
+    id: str| None = None
     name: str
     icon_url: str| None = None
     link: str| None = None

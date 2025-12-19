@@ -2,12 +2,14 @@ from src.database.session import Base
 from sqlalchemy import Column, String, Integer, Boolean, ForeignKey, BigInteger
 from sqlalchemy.orm import relationship
 import time
+from uuid import uuid4
+
 
 class PixelModel(Base):
     __tablename__ = "pixel"
 
-    id = Column(String, primary_key=True)
-    type = Column(String)
+    id = Column(String, primary_key=True, default= lambda: f"pixel_{uuid4().hex[:12]}")
+    type = Column(String, default="photo")
     # url
     width = Column(Integer, default=0)
     height = Column(Integer, default=0)

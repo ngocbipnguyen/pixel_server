@@ -2,11 +2,12 @@ from src.database.session import Base
 from sqlalchemy import String, Integer, BigInteger, ForeignKey, Boolean, Column
 from sqlalchemy.orm import relationship
 import time
+from uuid import uuid4
 
 class CollectionModel(Base):
     __tablename__ = "collection"
 
-    id = Column(String, primary_key= True)
+    id = Column(String, primary_key= True, default= lambda: f"sollection_{uuid4().hex[:12]}")
     title = Column(String, nullable= False)
     description = Column(String, default="")
     is_private = Column(Boolean, default=False)

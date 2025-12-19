@@ -1,6 +1,6 @@
 from src.repositories.profile_repo import IProfileRepo
 from src.schemas.user import Profile
-from src.models.user_model import UserModel
+from src.models.user_model import ProfileModel
 class ProfileService:
 
     def __init__(self, repo: IProfileRepo):
@@ -8,7 +8,7 @@ class ProfileService:
 
     
     def create(self, profile: Profile)-> Profile:
-        profileModel = profileModel(uui = profile.uui, 
+        profileModel = ProfileModel(uui = profile.uui, 
                                     total_view = profile.total_view, 
                                     all_time_rank = profile.all_time_rank,
                                     month_rank = profile.month_rank)

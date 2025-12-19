@@ -5,7 +5,7 @@ from src.models.collection_model import CollectionModel
 from src.models.pixel_model import PixelModel
 
 class Collection(BaseModel):
-    id: str
+    id: str | None = None
     title: str
     description: str | None = None
     is_private: bool | None = None

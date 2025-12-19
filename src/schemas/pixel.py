@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from src.models.pixel_model import PixelModel, PhotoModel
 
 class Photo(BaseModel):
-    id: str
+    id: str | None = None
     original: str
     large: str
     medium: str
@@ -12,7 +12,7 @@ class PhotoParams(BaseModel):
     id: str
 
 class Pixel(BaseModel):
-    id: str
+    id: str | None = None
     type: str | None = None
     width: int | None = None
     height: int | None = None
