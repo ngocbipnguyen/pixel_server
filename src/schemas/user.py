@@ -3,6 +3,7 @@ from .social import Social, map_social
 from .collection import Collection, map_collection_to_model
 from typing import List
 from src.models.user_model import ProfileModel, UserModel
+from pwdlib import PasswordHash
 
 class Profile(BaseModel):
     uui: str
@@ -14,6 +15,7 @@ class User(BaseModel):
     uui: str | None = None
     email: str
     name: str
+    password: str
     url: str| None = None
     token: str| None = None
     timestamps: int | None = None
@@ -41,6 +43,7 @@ def map_profile(profile: Profile)-> ProfileModel:
 def map_user(user: User)-> UserModel:
     userModel = UserModel(uui = user.uui, 
                             email = user.email, 
+                            password = hash_password(password = user.password),
                             name = user.name,
                             url = user.url, 
                             token =user.token,
@@ -64,4 +67,23 @@ def map_user(user: User)-> UserModel:
 
     return userModel
 
+class LoginRequest(BaseModel):
+    email: str
+    password: str
 
+class TokenResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer" 
+
+
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str
+
+password_hash = PasswordHash.recommended()
+
+def hash_password(password: str) -> str:
+    return password_hash.hash(password)
+
+def verify_password(plain_password: str, hashed_password: str): 
+    return password_hash.verify(plain_password, hashed_password)

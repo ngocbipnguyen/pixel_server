@@ -9,6 +9,7 @@ class UserModel(Base):
 
     uui = Column(String, primary_key=True, default=lambda:str(uuid4()))
     email = Column(String, unique=True, nullable=False)
+    password = Column(String, nullable= False)
     name = Column(String, nullable= False)
     url = Column(String)
     token = Column(String)

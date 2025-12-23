@@ -18,3 +18,9 @@ class UserRepoImpl(IUserRepo):
     
     def get_all(self)-> Optional[List[UserModel]]:
         return self.db.query(UserModel).all()
+    
+    def find_email(self,email: str)-> Optional[UserModel]:
+        return self.db.query(UserModel).filter(UserModel.email == email).first()
+    
+    def login(self, email: str, password: str)-> Optional[UserModel]:
+        return self.db.query(UserModel).filter(UserModel.email == email).first()

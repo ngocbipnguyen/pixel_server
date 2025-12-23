@@ -1,0 +1,5 @@
+from datetime import timedelta
+
+SECRET_KEY =  "5708713494f76f3c9a14c9cb8f4ae806821ea0d4ae14a9d6c6bfa9b83f390c6f"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
