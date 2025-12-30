@@ -2,7 +2,7 @@ from src.repositories.pixel_repo import IPixelRepo
 from src.models.pixel_model import PixelModel, PhotoModel
 from src.schemas.pixel import Pixel, map_pixel
 from typing import List
-
+from src.schemas.pixel import UpdatePixel
 class PixelService():
 
     def __init__(self, repo: IPixelRepo):
@@ -30,3 +30,6 @@ class PixelService():
     
     def get_all(self)-> List[Pixel]:
         return self.repo.get_all()
+    
+    def updatePixel(self, id: str, data: UpdatePixel):
+        return self.repo.update_pixel(id= id, data = data)

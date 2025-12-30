@@ -2,6 +2,7 @@ from .collection_repo import ICollectionRepo
 from sqlalchemy.orm import Session
 from src.models.collection_model import CollectionModel
 from typing import Optional, List
+from src.schemas.collection import UpdateCollection
 
 class CollectionRepoImpl(ICollectionRepo):
 
@@ -22,3 +23,14 @@ class CollectionRepoImpl(ICollectionRepo):
     
     def get_all(self)-> Optional[List[CollectionModel]]:
         return self.db.query(CollectionModel).all()
+    
+    def update(self, data: UpdateCollection) -> Optional[CollectionModel]:
+        collectionModel = self.db.query(CollectionModel).filter(CollectionModel.id == data.id).first()
+        if not collectionModel:
+            return None
+        for key, value in data.model_dump(exclude_unset=True).items():
+            setattr(collectionModel, key, value)
+
+        self.db.commit()
+        self.db.refresh(collectionModel)
+        return collectionModel

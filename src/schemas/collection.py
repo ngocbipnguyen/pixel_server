@@ -3,6 +3,7 @@ from typing import List
 from .pixel import Pixel, map_pixel
 from src.models.collection_model import CollectionModel
 from src.models.pixel_model import PixelModel
+from typing import Optional
 
 class Collection(BaseModel):
     id: str | None = None
@@ -20,6 +21,17 @@ class Collection(BaseModel):
 class CollectionParams(BaseModel):
     id: str | None = None
     uui: str | None = None
+
+class UpdateCollection(BaseModel):
+    id: str
+    title: Optional[str] = None
+    description: Optional[str] = None
+    is_private: Optional[bool] = None
+    media_count: Optional[int] = None
+    videos_count: Optional[int] = None
+    photos_count: Optional[int] = None
+    timestamp_create: Optional[int] = None
+    timestamp_update: Optional[int] = None
 
 def map_collection_to_model(collection: Collection) -> CollectionModel:
     db_collection = CollectionModel(

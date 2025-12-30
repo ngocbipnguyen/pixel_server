@@ -4,12 +4,19 @@ from .collection import Collection, map_collection_to_model
 from typing import List
 from src.models.user_model import ProfileModel, UserModel
 from pwdlib import PasswordHash
+from typing import Optional
 
 class Profile(BaseModel):
     uui: str
     total_view: int | None = None
     all_time_rank: int | None = None
     month_rank: int | None = None
+
+class UpdateProfile(BaseModel):
+    uui: str
+    total_view: Optional[int] = None
+    all_time_rank: Optional[int] = None
+    month_rank: Optional[int] = None
 
 class User(BaseModel):
     uui: str | None = None
@@ -24,6 +31,17 @@ class User(BaseModel):
     profile: Profile | None = None
     socials: List[Social]| None = None
     collections: List[Collection]| None = None
+
+class Update(BaseModel):
+    uui: str
+    email: Optional[str] = None
+    name: Optional[str] = None
+    password: Optional[str] = None
+    url: Optional[str] = None
+    token: Optional[str] = None
+    timestamps: Optional[bool] = None
+    is_active: Optional[int] = None
+    follow: Optional[int] = None
 
 
 class UserParams(BaseModel):

@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from src.models.social_model import SocialModel
-
+from typing import Optional
 class Social(BaseModel):
     id: str| None = None
     name: str
@@ -22,3 +22,10 @@ def map_social(social: Social)-> SocialModel:
 class SocialParams(BaseModel):
     id: str | None = None
     uui: str | None = None
+
+
+class UpdateSocial(BaseModel):
+    id: str | None = None 
+    name: Optional[str] = None
+    icon_url: Optional[str] = None
+    link: Optional[str] = None

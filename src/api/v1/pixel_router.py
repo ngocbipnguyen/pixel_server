@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from src.database.session import getDatabase
 from src.repositories.pixel_repo_impl import PixelRepoImpl
-from src.schemas.pixel import Pixel, PixelParams
+from src.schemas.pixel import Pixel, PixelParams, UpdatePixel
 from sqlalchemy.orm import Session
 from src.services.pixel_service import PixelService
 from typing import List
@@ -28,3 +28,7 @@ def find_by_collect(param: PixelParams, service: PixelService = Depends(get_serv
 @pixel_router.get("/", response_model=List[Pixel])
 def get_all(service: PixelService = Depends(get_service), user_current: str = Depends(get_current_user)):
     return service.get_all()
+
+@pixel_router.post("/update", response_model= Pixel)
+def update_pixel(update: UpdatePixel, service: PixelService = Depends(get_service), user_current: str = Depends(get_current_user)): 
+    return service.updatePixel(id= update.id, data= update)

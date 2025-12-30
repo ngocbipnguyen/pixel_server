@@ -1,7 +1,7 @@
 from src.repositories.collection_repo import ICollectionRepo
 from src.models.collection_model import CollectionModel
 from src.models.pixel_model import PixelModel
-from src.schemas.collection import Collection, map_collection_to_model
+from src.schemas.collection import Collection, map_collection_to_model, UpdateCollection
 from typing import List
 
 class CollectionService():
@@ -20,3 +20,6 @@ class CollectionService():
     
     def get_all(self)-> List[Collection]:
         return self.repo.get_all()
+    
+    def update(self, data: UpdateCollection): 
+        return self.repo.update(data)

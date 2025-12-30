@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from src.database.session import getDatabase
 from src.repositories.collection_repo_impl import CollectionRepoImpl
-from src.schemas.collection import Collection, CollectionParams
+from src.schemas.collection import Collection, CollectionParams, UpdateCollection
 from sqlalchemy.orm import Session
 from src.services.collection_service import CollectionService
 from typing import List
@@ -29,3 +29,7 @@ def find_by_id(param: CollectionParams,  service: CollectionService = Depends(ge
 def find_by_uui(param: CollectionParams,  service: CollectionService = Depends(get_service), user_current: str = Depends(get_current_user)):
     return service.find_by_uui(uui= param.uui)
 
+
+@collection_router.post("/update", response_model= Collection)
+def update(data: UpdateCollection, service: CollectionService = Depends(get_service), user_current: str = Depends(get_current_user)):
+    return service.update(data= data)

@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from src.models.pixel_model import PixelModel, PhotoModel
+from typing import Optional
 
 class Photo(BaseModel):
     id: str | None = None
@@ -27,6 +28,11 @@ class Pixel(BaseModel):
 class PixelParams(BaseModel):
     id: str | None = None
     collection_id: str | None = None
+
+class UpdatePixel(BaseModel):
+    id: str | None = None
+    is_favorite: Optional[bool] = None
+    is_mark: Optional[bool] = None
 
 def map_pixel(pixel: Pixel, collection_id: str) -> PixelModel:
     db_pixel = PixelModel(

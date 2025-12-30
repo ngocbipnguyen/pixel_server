@@ -1,7 +1,7 @@
 from src.repositories.social_repo import ISocialRepo
 from typing import List
 from src.models.social_model import SocialModel
-from src.schemas.social import Social, map_social
+from src.schemas.social import Social, map_social, UpdateSocial
 class SocialService:
     
     def __init__(self, repo: ISocialRepo):
@@ -16,3 +16,6 @@ class SocialService:
     
     def find_by_uui(self, uui: str)-> List[Social]:
         return self.repo.find_by_uui(uui)
+    
+    def update(self, data: UpdateSocial)-> Social:
+        return self.repo.update(data)

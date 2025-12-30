@@ -1,5 +1,5 @@
 from src.repositories.profile_repo import IProfileRepo
-from src.schemas.user import Profile
+from src.schemas.user import Profile, UpdateProfile
 from src.models.user_model import ProfileModel
 class ProfileService:
 
@@ -17,3 +17,6 @@ class ProfileService:
         
     def find(self, uui: str)-> Profile:
         return self.repo.find(uui = uui)
+    
+    def update(self, data: UpdateProfile):
+        return self.repo.update(data)

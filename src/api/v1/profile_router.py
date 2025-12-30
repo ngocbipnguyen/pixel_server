@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from src.database.session import getDatabase
 from src.repositories.profile_repo import IProfileRepo
 from src.repositories.profile_repo_impl import ProfileRepoImpl
-from src.schemas.user import Profile, ProfileParams
+from src.schemas.user import Profile, ProfileParams, UpdateProfile
 from sqlalchemy.orm import Session
 from src.services.profile_service import ProfileService
 from src.api.v1.deps import get_current_user
@@ -21,3 +21,8 @@ def create(proflie: Profile, service: ProfileService = Depends(get_server), user
 @profile_router.get("/uui", response_model=Profile)
 def find(params: ProfileParams, service: ProfileService = Depends(get_server), user_current: str = Depends(get_current_user)):
     return service.find(uui= params.uui)
+
+
+@profile_router.post("/update", response_model=Profile)
+def update(params: UpdateProfile,  service: ProfileService = Depends(get_server), user_current: str = Depends(get_current_user)):
+    return service.update(params)
