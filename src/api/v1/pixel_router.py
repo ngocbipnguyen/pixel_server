@@ -4,6 +4,7 @@ from src.repositories.pixel_repo_impl import PixelRepoImpl
 from src.schemas.pixel import Pixel, PixelParams, UpdatePixel
 from sqlalchemy.orm import Session
 from src.services.pixel_service import PixelService
+from src.repositories.collection_repo_impl import CollectionRepoImpl
 from typing import List
 from src.api.v1.deps import get_current_user
 
@@ -11,7 +12,8 @@ pixel_router = APIRouter(prefix="/pixel")
 
 def get_service(db: Session = Depends(getDatabase)):
     repo = PixelRepoImpl(db= db)
-    return PixelService(repo= repo)
+    repo_coll = CollectionRepoImpl(db=db)
+    return PixelService(repo= repo, repo_coll= repo_coll)
 
 @pixel_router.post("/", response_model= Pixel)
 def create(pixel: Pixel, service: PixelService = Depends(get_service), user_current: str = Depends(get_current_user)):

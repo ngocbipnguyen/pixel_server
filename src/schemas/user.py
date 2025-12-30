@@ -32,7 +32,7 @@ class User(BaseModel):
     socials: List[Social]| None = None
     collections: List[Collection]| None = None
 
-class Update(BaseModel):
+class UpdateUser(BaseModel):
     uui: str
     email: Optional[str] = None
     name: Optional[str] = None

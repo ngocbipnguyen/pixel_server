@@ -1,12 +1,16 @@
 from src.repositories.pixel_repo import IPixelRepo
+from src.repositories.collection_repo import ICollectionRepo
 from src.models.pixel_model import PixelModel, PhotoModel
+from src.schemas.collection import UpdateCollection
 from src.schemas.pixel import Pixel, map_pixel
 from typing import List
+import time
 from src.schemas.pixel import UpdatePixel
 class PixelService():
 
-    def __init__(self, repo: IPixelRepo):
+    def __init__(self, repo: IPixelRepo, repo_coll: ICollectionRepo):
         self.repo = repo
+        self.repo_coll = repo_coll
 
 
     def create(self, pixel: Pixel) -> Pixel:
@@ -20,6 +24,7 @@ class PixelService():
         #         small = pixel.photo.small
         #     )
         pixelModel = map_pixel(pixel= pixel, collection_id= pixel.collection_id)
+        self.repo_coll.update(UpdateCollection(id= pixel.collection_id,timestamp_update= int(time.time() * 1000)))
         return self.repo.create(pixelModel)
     
     def find(self, id: str)-> Pixel:

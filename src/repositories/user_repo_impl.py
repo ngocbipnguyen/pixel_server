@@ -19,7 +19,7 @@ class UserRepoImpl(IUserRepo):
         return self.db.query(UserModel).filter(UserModel.uui == uui).first()
     
     def get_all(self)-> Optional[List[UserModel]]:
-        return self.db.query(UserModel).all()
+        return self.db.query(UserModel).order_by(UserModel.timestamps.desc()).all()
     
     def find_email(self,email: str)-> Optional[UserModel]:
         return self.db.query(UserModel).filter(UserModel.email == email).first()

@@ -19,10 +19,10 @@ class CollectionRepoImpl(ICollectionRepo):
         return self.db.query(CollectionModel).filter(CollectionModel.id == id).first()
     
     def find_by_uui(self,uui: str)-> Optional[List[CollectionModel]]:
-        return self.db.query(CollectionModel).filter(CollectionModel.uui == uui)
+        return self.db.query(CollectionModel).filter(CollectionModel.uui == uui).order_by(CollectionModel.timestamp_update.desc())
     
     def get_all(self)-> Optional[List[CollectionModel]]:
-        return self.db.query(CollectionModel).all()
+        return self.db.query(CollectionModel).order_by(CollectionModel.timestamp_update.desc()).all()
     
     def update(self, data: UpdateCollection) -> Optional[CollectionModel]:
         collectionModel = self.db.query(CollectionModel).filter(CollectionModel.id == data.id).first()

@@ -20,10 +20,10 @@ class PixelRepoImpl(IPixelRepo):
         return self.db.query(PixelModel).filter(PixelModel.id == id).first()
     
     def find_by_collection(self,id:str) -> Optional[List[PixelModel]]:
-        return self.db.query(PixelModel).filter(PixelModel.collection_id == id)
+        return self.db.query(PixelModel).filter(PixelModel.collection_id == id).order_by(PixelModel.timestamps.desc())
     
     def get_all(self)-> Optional[List[PixelModel]]:
-        return self.db.query(PixelModel).all()
+        return self.db.query(PixelModel).order_by(PixelModel.timestamps.desc()).all()
     
     def update_pixel(self, id: str, data: UpdatePixel)-> Optional[PixelModel]:
         pixel_db = self.db.query(PixelModel).filter(PixelModel.id == id).first()
