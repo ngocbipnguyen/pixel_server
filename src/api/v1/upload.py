@@ -2,10 +2,11 @@ import uuid
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from src.core.minio import minio_client, ensure_bucket, MINIO_BUCKET, MINIO_PUBLIC_URL
 
-router_upload = APIRouter(prefix="/upload", tags=["Upload"])
+router_upload = APIRouter(prefix="/upload")
 
 ALLOWED_TYPES = [
     "image/jpeg",
+    "image/jpg",
     "image/png",
     "image/webp",
     "video/mp4",
@@ -14,6 +15,10 @@ ALLOWED_TYPES = [
 
 @router_upload.post("/")
 async def upload_file(file: UploadFile = File(...)):
+    # return {
+    #     "filename": file.filename,
+    #     "type": file.content_type
+    # }
     if file.content_type not in ALLOWED_TYPES:
         raise HTTPException(status_code=400, detail="File type not allowed")
 
@@ -27,7 +32,7 @@ async def upload_file(file: UploadFile = File(...)):
         object_name=object_name,
         data=file.file,
         length=-1,
-        part_size=10 * 1024 * 1024,
+        part_size=20 * 1024 * 1024,
         content_type=file.content_type
     )
 
