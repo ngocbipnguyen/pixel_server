@@ -16,3 +16,7 @@ minio_client = Minio(
 def ensure_bucket():
     if not minio_client.bucket_exists(MINIO_BUCKET):
         minio_client.make_bucket(MINIO_BUCKET)
+
+def create_bucket(name_ducket: str):
+    if not minio_client.bucket_exists(name_ducket):
+        minio_client.make_bucket(name_ducket)
