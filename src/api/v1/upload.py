@@ -1,8 +1,16 @@
 import uuid
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, UploadFile, File, HTTPException, Depends, Form
 from src.core.minio import minio_client, ensure_bucket, MINIO_BUCKET, MINIO_PUBLIC_URL, create_bucket
 from PIL import Image
 from io import BytesIO
+from src.services.pixel_service import PixelService
+from sqlalchemy.orm import Session
+from src.database.session import getDatabase
+from src.repositories.pixel_repo_impl import PixelRepoImpl
+from src.repositories.collection_repo_impl import CollectionRepoImpl
+from src.schemas.pixel import Pixel, Photo
+from src.api.v1.deps import get_current_user
+from typing import List
 
 router_upload = APIRouter(prefix="/upload")
 
@@ -14,6 +22,18 @@ ALLOWED_TYPES = [
     "video/mp4",
     "video/mov"
 ]
+
+# def get_service(db: Session = Depends(getDatabase())):
+#     repo = PixelRepoImpl(db= db)
+#     repo_col = CollectionRepoImpl(db= db)
+#     return PixelService(repo= repo, repo_coll= repo_col)
+
+def get_service(db: Session = Depends(getDatabase)):
+    repo = PixelRepoImpl(db= db)
+    repo_coll = CollectionRepoImpl(db=db)
+    return PixelService(repo= repo, repo_coll= repo_coll)
+
+
 
 @router_upload.post("/")
 async def upload_file(file: UploadFile = File(...)):
@@ -43,7 +63,12 @@ async def upload_file(file: UploadFile = File(...)):
     }
 
 @router_upload.post("/upload")
-async def upload_image(file: UploadFile = File(...)):
+async def upload_image(file: UploadFile = File(...),
+                       collection_id: str = Form(...), 
+                       service: PixelService = Depends(get_service),
+                       user_current: str = Depends(get_current_user)):
+    if file.content_type not in ALLOWED_TYPES:
+        raise HTTPException(status_code=400, detail="File type not allowed")
     file_bytes = await file.read()
     images = generate_images(file_bytes)
 
@@ -65,7 +90,37 @@ async def upload_image(file: UploadFile = File(...)):
         )
         urls[name] = f"{MINIO_PUBLIC_URL}/{name}/{object_name}"
 
-    return urls
+    w, h = img.size
+    file_ext = file_ext.lower()
+
+    file_type = "photo"  # default
+
+    if file_ext in (".mp4", ".mov"):
+        file_type = "video"
+
+    
+
+    photo = Photo(**urls)
+    print("photo: ", photo)
+    pixel = Pixel(width= w , height= h, type= file_type, collection_id= collection_id, photo= photo)
+    print("pixel: ", pixel)
+    return service.create(pixel = pixel)
+
+
+@router_upload.post("/uploads")
+async def upload_images(files: List[UploadFile] = File(...),
+                        collection_id: str = Form(...),service: PixelService = Depends(get_service),
+                       user_current: str = Depends(get_current_user)):
+    urls = []
+
+    for file in files:
+        url = upload_file(file)
+        urls.append(url)
+
+    return {
+        "count": len(urls),
+        "images": urls
+    }
 
 
 
@@ -94,3 +149,10 @@ def image_to_bytes(img: Image.Image, type: str) -> bytes:
     buf = BytesIO()
     img.save(buf, format=type, quality=85)
     return buf.getvalue()
+
+# def get_avg_color(img: Image.Image):
+#     img = img.convert("RGB")
+#     np_img = np.array(img)
+
+#     avg = np_img.mean(axis=(0, 1))  # (R, G, B)
+#     return tuple(map(int, avg))
