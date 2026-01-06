@@ -108,21 +108,84 @@ async def upload_image(file: UploadFile = File(...),
 
 
 @router_upload.post("/uploads")
-async def upload_images(files: List[UploadFile] = File(...),
-                        collection_id: str = Form(...),service: PixelService = Depends(get_service),
-                       user_current: str = Depends(get_current_user)):
-    urls = []
-
+async def upload_images(
+    files: List[UploadFile] = File(...),
+    collection_id: str = Form(...),
+    service: PixelService = Depends(get_service),
+    user_current: str = Depends(get_current_user)
+):
+    results = []
+    errors = []
+    
     for file in files:
-        url = upload_file(file)
-        urls.append(url)
-
+        try:
+            if file.content_type not in ALLOWED_TYPES:
+                errors.append({
+                    "filename": file.filename,
+                    "error": "File type not allowed"
+                })
+                continue
+            
+            file_bytes = await file.read()
+            
+            images = generate_images(file_bytes)
+            
+            file_ext = file.filename.split(".")[-1] if "." in file.filename else "jpg"
+            object_name = f"{uuid.uuid4()}.{file_ext}"
+            
+            urls = {}
+            for name, img in images.items():
+                create_bucket(name_ducket=name)
+                
+                data = image_to_bytes(img=img, type=file_ext)
+                
+                minio_client.put_object(
+                    bucket_name=name,
+                    object_name=object_name,
+                    data=BytesIO(data),
+                    length=len(data),
+                    part_size=10 * 1024 * 1024,
+                    content_type=file.content_type
+                )
+                urls[name] = f"{MINIO_PUBLIC_URL}/{name}/{object_name}"
+            
+            w, h = images["original"].size
+            file_ext_lower = file_ext.lower()
+            
+            file_type = "photo"
+            if file_ext_lower in ("mp4", "mov"):
+                file_type = "video"
+            
+            photo = Photo(**urls)
+            
+            pixel = Pixel(
+                width=w,
+                height=h,
+                type=file_type,
+                collection_id=collection_id,
+                photo=photo
+            )
+            
+            created_pixel = service.create(pixel=pixel)
+            
+            results.append({
+                "filename": file.filename,
+                "pixel": created_pixel,
+                "urls": urls
+            })
+            
+        except Exception as e:
+            errors.append({
+                "filename": file.filename,
+                "error": str(e)
+            })
+    
     return {
-        "count": len(urls),
-        "images": urls
+        "success_count": len(results),
+        "error_count": len(errors),
+        "results": results,
+        "errors": errors
     }
-
-
 
 def resize_image(img: Image.Image, scale: int):
     w, h = img.size
