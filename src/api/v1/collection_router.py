@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends
 from src.database.session import getDatabase
 from src.repositories.collection_repo_impl import CollectionRepoImpl
 from src.schemas.collection import Collection, CollectionParams, UpdateCollection
+from src.schemas.response import APIResponse, ListResponse
 from sqlalchemy.orm import Session
 from src.services.collection_service import CollectionService
 from typing import List
@@ -13,23 +14,48 @@ def get_service(db: Session = Depends(getDatabase)):
     repo = CollectionRepoImpl(db=db)
     return CollectionService(repo=repo)
 
-@collection_router.post("/", response_model=Collection)
+@collection_router.post("/", response_model= APIResponse[Collection])
 def create(colection: Collection, service: CollectionService = Depends(get_service), user_current: str = Depends(get_current_user)):
-    return service.create(collection= colection)
+    try:
+        result = service.create(collection= colection)
+        return APIResponse.success_response(result, "Collection created successfully")
+    except ValueError as e:
+        return APIResponse.error_response(
+            message="Failed to create collection",
+            error=str(e)
+        ) 
 
-@collection_router.get("/", response_model= List[Collection])
+@collection_router.get("/", response_model= ListResponse[Collection])
 def get_all(service: CollectionService = Depends(get_service), user_current: str = Depends(get_current_user)):
-    return service.get_all()
+    result = service.get_all()
+    if not result:
+        return ListResponse.create(result, "No collections")
+    return ListResponse.create(result, "Collections retrieved successfully")
 
-@collection_router.get("/id", response_model= Collection)
+@collection_router.get("/id", response_model= APIResponse[Collection])
 def find_by_id(param: CollectionParams,  service: CollectionService = Depends(get_service), user_current: str = Depends(get_current_user)):
-    return service.find(id= param.id)
+    result = service.find(id= param.id)
+    if not result :
+        return APIResponse.error_response(
+            message="Failed to get a collection",
+            error= "Id is null"
+        ) 
+    return APIResponse.success_response(result, "Collection retrieved successfully")
 
-@collection_router.get("/uui", response_model= List[Collection])
+@collection_router.get("/uui", response_model= ListResponse[Collection])
 def find_by_uui(param: CollectionParams,  service: CollectionService = Depends(get_service), user_current: str = Depends(get_current_user)):
-    return service.find_by_uui(uui= param.uui)
+    result = service.find_by_uui(uui= param.uui)
+    if not result:
+        return ListResponse.create(result, "No collections")
+    return ListResponse.create(result, "Collections retrieved successfully")
 
 
-@collection_router.post("/update", response_model= Collection)
+@collection_router.post("/update", response_model= APIResponse[Collection])
 def update(data: UpdateCollection, service: CollectionService = Depends(get_service), user_current: str = Depends(get_current_user)):
-    return service.update(data= data)
+    result = service.update(data= data)
+    if not result :
+        return APIResponse.error_response(
+            message="Failed to update",
+            error= "Id is null"
+        ) 
+    return APIResponse.success_response(result, "Collection updated successfully")

@@ -20,7 +20,7 @@ class SocialRepoImpl(ISocialRepo):
         return self.db.query(SocialModel).filter(SocialModel.id == id).first()
     
     def find_by_uui(self, uui: str) -> Optional[List[SocialModel]]:
-        return self.db.query(SocialModel).filter(SocialModel.uui == uui)
+        return self.db.query(SocialModel).filter(SocialModel.uui == uui).all()
     
     def update(self, update: UpdateSocial) -> Optional[SocialModel]:
         social_model = self.db.query(SocialModel).filter(SocialModel.id == update.id).first()

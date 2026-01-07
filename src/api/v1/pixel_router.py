@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends
 from src.database.session import getDatabase
 from src.repositories.pixel_repo_impl import PixelRepoImpl
 from src.schemas.pixel import Pixel, PixelParams, UpdatePixel
+from src.schemas.response import APIResponse, ListResponse
 from sqlalchemy.orm import Session
 from src.services.pixel_service import PixelService
 from src.repositories.collection_repo_impl import CollectionRepoImpl
@@ -15,22 +16,47 @@ def get_service(db: Session = Depends(getDatabase)):
     repo_coll = CollectionRepoImpl(db=db)
     return PixelService(repo= repo, repo_coll= repo_coll)
 
-@pixel_router.post("/", response_model= Pixel)
+@pixel_router.post("/", response_model= APIResponse[Pixel])
 def create(pixel: Pixel, service: PixelService = Depends(get_service), user_current: str = Depends(get_current_user)):
-    return service.create(pixel=pixel)
+    try:
+        result = service.create(pixel=pixel)
+        return APIResponse.success_response(result, "Pixel created successfully")
+    except ValueError as e:
+        return APIResponse.error_response(
+            message="Failed to create Pixel",
+            error=str(e)
+        ) 
 
-@pixel_router.get("/id", response_model=Pixel)
+@pixel_router.get("/id", response_model= APIResponse[Pixel])
 def find_by_id(param: PixelParams, service: PixelService = Depends(get_service), user_current: str = Depends(get_current_user)):
-    return service.find(id= param.id)
+    result = service.find(id= param.id)
+    if not result :
+        return APIResponse.error_response(
+            message="Failed to get a pixel",
+            error= "result is null"
+        ) 
+    return APIResponse.success_response(result, "Pixel retrieved successfully")
 
-@pixel_router.get("/id_collect", response_model= List[Pixel])
+@pixel_router.get("/id_collect", response_model= ListResponse[Pixel])
 def find_by_collect(param: PixelParams, service: PixelService = Depends(get_service), user_current: str = Depends(get_current_user)):
-    return service.get_pixel_by_collection(id= param.collection_id)
+    result = service.get_pixel_by_collection(id= param.collection_id)
+    if not result:
+        return ListResponse.create(result, "No pixel")
+    return ListResponse.create(result, "Pixels retrieved successfully")
 
-@pixel_router.get("/", response_model=List[Pixel])
+@pixel_router.get("/", response_model= ListResponse[Pixel])
 def get_all(service: PixelService = Depends(get_service), user_current: str = Depends(get_current_user)):
-    return service.get_all()
+    result = service.get_all()
+    if not result:
+        return ListResponse.create(result, "No pixel")
+    return ListResponse.create(result, "Pixels retrieved successfully")
 
-@pixel_router.post("/update", response_model= Pixel)
+@pixel_router.post("/update", response_model= APIResponse[Pixel])
 def update_pixel(update: UpdatePixel, service: PixelService = Depends(get_service), user_current: str = Depends(get_current_user)): 
-    return service.updatePixel(id= update.id, data= update)
+    result = service.updatePixel(id= update.id, data= update)
+    if not result: 
+        return APIResponse.error_response(
+            message="Pixel update",
+            error=f"Pixel update failure!"
+        )
+    return APIResponse.success_response(result, "Pixel updated successfully")
