@@ -6,6 +6,7 @@ from src.models.social_model import SocialModel
 from src.schemas.user import User, map_user, TokenResponse, verify_password, TokenResponse, UpdateUser
 from fastapi import HTTPException
 from src.core.config import create_refresh_token, create_token
+from src.core.verify_google_token import verify_google_token
 
 class UserService:
 
@@ -38,4 +39,28 @@ class UserService:
     
     def update(self, data: UpdateUser): 
         return self.repo.update(data)
+    
+
+    def login_google(self, id_token) -> TokenResponse:
+        payload = verify_google_token(id_token)
+        if not payload:
+            raise HTTPException(status_code=401, detail="Invalid Google token")
+
+        print(payload)
+        email = payload["email"]
+        name = payload.get("name")
+        url = payload.get("picture")
+
+        user = self.repo.find_email(email = email)
+        if not user:
+            user = User(
+                email= email, name= name, url= url
+            )
+            userModel = map_user(user= user)
+            user = self.repo.create(userModel)    
+
+        access_token = create_token({"sub": user.uui})
+        refresh_token = create_refresh_token(user.uui)
+        return TokenResponse(access_token= access_token, refresh_token= refresh_token)
+
 

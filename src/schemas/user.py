@@ -22,7 +22,7 @@ class User(BaseModel):
     uui: str | None = None
     email: str
     name: str
-    password: str
+    password: str | None = None
     url: str| None = None
     token: str| None = None
     timestamps: int | None = None

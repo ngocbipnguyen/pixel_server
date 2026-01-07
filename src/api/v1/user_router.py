@@ -7,6 +7,8 @@ from sqlalchemy.orm import Session
 from src.services.user_service import UserService
 from typing import List
 from src.api.v1.deps import get_current_user
+from src.core.verify_google_token import verify_google_token
+from src.schemas.google_login import GoogleLoginRequest
 
 user_router = APIRouter(prefix="/user")
 
@@ -62,3 +64,9 @@ def update(data: UpdateUser, service: UserService = Depends(get_service),  user_
             error=f"User update failure!"
         )
     return APIResponse.success_response(result, "User updated successfully")
+
+
+@user_router.post("/login/google", response_model= APIResponse[TokenResponse])
+def login_google(req: GoogleLoginRequest, service: UserService = Depends(get_service)):
+    result = service.login_google(req.id_token)
+    return APIResponse.success_response(result, "Login by google successful!")
