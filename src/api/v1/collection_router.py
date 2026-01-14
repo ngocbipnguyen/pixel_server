@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from src.database.session import getDatabase
 from src.repositories.collection_repo_impl import CollectionRepoImpl
-from src.schemas.collection import Collection, CollectionParams, UpdateCollection
+from src.schemas.collection import Collection, CollectionParams, UpdateCollection, TimestampResponse
 from src.schemas.response import APIResponse, ListResponse
 from sqlalchemy.orm import Session
 from src.services.collection_service import CollectionService
@@ -26,8 +26,8 @@ def create(colection: Collection, service: CollectionService = Depends(get_servi
         ) 
 
 @collection_router.get("/", response_model= ListResponse[Collection])
-def get_all(service: CollectionService = Depends(get_service), user_current: str = Depends(get_current_user)):
-    result = service.get_all()
+def get_all(param: CollectionParams,service: CollectionService = Depends(get_service), user_current: str = Depends(get_current_user)):
+    result = service.get_all(limit= param.limit, offset= param.offset)
     if not result:
         return ListResponse.create(result, "No collections")
     return ListResponse.create(result, "Collections retrieved successfully")
@@ -44,7 +44,7 @@ def find_by_id(param: CollectionParams,  service: CollectionService = Depends(ge
 
 @collection_router.get("/uui", response_model= ListResponse[Collection])
 def find_by_uui(param: CollectionParams,  service: CollectionService = Depends(get_service), user_current: str = Depends(get_current_user)):
-    result = service.find_by_uui(uui= param.uui)
+    result = service.find_by_uui(uui= param.uui, limit= param.limit, offset= param.offset)
     if not result:
         return ListResponse.create(result, "No collections")
     return ListResponse.create(result, "Collections retrieved successfully")
@@ -59,3 +59,24 @@ def update(data: UpdateCollection, service: CollectionService = Depends(get_serv
             error= "Id is null"
         ) 
     return APIResponse.success_response(result, "Collection updated successfully")
+
+@collection_router.get("/latest", response_model= APIResponse[Collection])
+def get_timestaps_decs(service: CollectionService = Depends(get_service), user_current: str = Depends(get_current_user)):
+    result = service.get_timestaps_decs()
+    if not result :
+        return APIResponse.error_response(
+            message="Failed to get a collection",
+            error= "result is null"
+        ) 
+    return APIResponse.success_response(result, "Collection retrieved successfully")
+
+@collection_router.get("/timestamp", response_model= APIResponse[TimestampResponse])
+def get_latest_timestamp(service: CollectionService = Depends(get_service), user_current: str = Depends(get_current_user)):
+    result = service.get_latest_timestamp()
+    result_time = TimestampResponse(timestamp= result)
+    if not result :
+        return APIResponse.error_response(
+            message="Failed to get a collection",
+            error= "result is null"
+        ) 
+    return APIResponse.success_response(result_time, "Collection retrieved successfully")

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from src.database.session import getDatabase
 from src.repositories.pixel_repo_impl import PixelRepoImpl
-from src.schemas.pixel import Pixel, PixelParams, UpdatePixel
+from src.schemas.pixel import Pixel, PixelParams, UpdatePixel, TimestampResponse
 from src.schemas.response import APIResponse, ListResponse
 from sqlalchemy.orm import Session
 from src.services.pixel_service import PixelService
@@ -39,14 +39,14 @@ def find_by_id(param: PixelParams, service: PixelService = Depends(get_service),
 
 @pixel_router.get("/id_collect", response_model= ListResponse[Pixel])
 def find_by_collect(param: PixelParams, service: PixelService = Depends(get_service), user_current: str = Depends(get_current_user)):
-    result = service.get_pixel_by_collection(id= param.collection_id)
+    result = service.get_pixel_by_collection(id= param.collection_id, limit= param.limit, offset= param.offset)
     if not result:
         return ListResponse.create(result, "No pixel")
     return ListResponse.create(result, "Pixels retrieved successfully")
 
 @pixel_router.get("/", response_model= ListResponse[Pixel])
-def get_all(service: PixelService = Depends(get_service), user_current: str = Depends(get_current_user)):
-    result = service.get_all()
+def get_all(param: PixelParams, service: PixelService = Depends(get_service), user_current: str = Depends(get_current_user)):
+    result = service.get_all(limit= param.limit, offset= param.offset)
     if not result:
         return ListResponse.create(result, "No pixel")
     return ListResponse.create(result, "Pixels retrieved successfully")
@@ -60,3 +60,24 @@ def update_pixel(update: UpdatePixel, service: PixelService = Depends(get_servic
             error=f"Pixel update failure!"
         )
     return APIResponse.success_response(result, "Pixel updated successfully")
+
+@pixel_router.get("/latest", response_model= APIResponse[Pixel])
+def get_timestaps_decs(service: PixelService = Depends(get_service), user_current: str = Depends(get_current_user)):
+    result = service.get_timestaps_decs()
+    if not result :
+        return APIResponse.error_response(
+            message="Failed to get a pixel",
+            error= "result is null"
+        ) 
+    return APIResponse.success_response(result, "Pixel retrieved successfully")
+
+@pixel_router.get("/timestamp", response_model= APIResponse[Pixel])
+def get_latest_timestamp(service: PixelService = Depends(get_service), user_current: str = Depends(get_current_user)):
+    result = service.get_latest_timestamp()
+    result_time = TimestampResponse(timestamp= result)
+    if not result :
+        return APIResponse.error_response(
+            message="Failed to get a pixel",
+            error= "result is null"
+        ) 
+    return APIResponse.success_response(result_time, "Pixel retrieved successfully")

@@ -28,6 +28,8 @@ class Pixel(BaseModel):
 class PixelParams(BaseModel):
     id: str | None = None
     collection_id: str | None = None
+    limit: int = 3
+    offset: int = 0
 
 class UpdatePixel(BaseModel):
     id: str | None = None
@@ -56,3 +58,6 @@ def map_pixel(pixel: Pixel, collection_id: str) -> PixelModel:
         )
 
     return db_pixel
+
+class TimestampResponse(BaseModel):
+    timestamp: int

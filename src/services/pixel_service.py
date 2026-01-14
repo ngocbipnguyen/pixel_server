@@ -30,11 +30,17 @@ class PixelService():
     def find(self, id: str)-> Pixel:
         return self.repo.find(id)
     
-    def get_pixel_by_collection(self, id)-> List[Pixel]:
-        return self.repo.find_by_collection(id)
+    def get_pixel_by_collection(self, id, limit: int, offset: int)-> List[Pixel]:
+        return self.repo.find_by_collection(id, limit=limit, offset=offset)
     
-    def get_all(self)-> List[Pixel]:
-        return self.repo.get_all()
+    def get_all(self, limit: int, offset: int)-> List[Pixel]:
+        return self.repo.get_all(limit=limit, offset=offset)
     
     def updatePixel(self, id: str, data: UpdatePixel):
         return self.repo.update_pixel(id= id, data = data)
+    
+    def get_timestaps_decs(self):
+        return self.repo.get_timestaps_decs()
+    
+    def get_latest_timestamp(self):
+        return self.repo.get_latest_timestamp()

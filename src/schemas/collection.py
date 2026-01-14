@@ -21,6 +21,8 @@ class Collection(BaseModel):
 class CollectionParams(BaseModel):
     id: str | None = None
     uui: str | None = None
+    limit: int = 3
+    offset: int = 0
 
 class UpdateCollection(BaseModel):
     id: str
@@ -55,3 +57,7 @@ def map_collection_to_model(collection: Collection) -> CollectionModel:
         ]
 
     return db_collection
+
+
+class TimestampResponse(BaseModel):
+    timestamp: int

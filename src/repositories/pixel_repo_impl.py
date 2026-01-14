@@ -3,6 +3,7 @@ from .pixel_repo import IPixelRepo
 from src.models.pixel_model import PixelModel
 from sqlalchemy.orm import Session
 from src.schemas.pixel import UpdatePixel
+from sqlalchemy import func
 
 class PixelRepoImpl(IPixelRepo):
 
@@ -19,11 +20,11 @@ class PixelRepoImpl(IPixelRepo):
     def find(self, id:str) -> Optional[PixelModel]:
         return self.db.query(PixelModel).filter(PixelModel.id == id).first()
     
-    def find_by_collection(self,id:str) -> Optional[List[PixelModel]]:
-        return self.db.query(PixelModel).filter(PixelModel.collection_id == id).order_by(PixelModel.timestamps.desc())
+    def find_by_collection(self, id:str, limit: int, offset: int) -> Optional[List[PixelModel]]:
+        return self.db.query(PixelModel).filter(PixelModel.collection_id == id).order_by(PixelModel.timestamps.desc()).offset(offset).limit(limit).all()
     
-    def get_all(self)-> Optional[List[PixelModel]]:
-        return self.db.query(PixelModel).order_by(PixelModel.timestamps.desc()).all()
+    def get_all(self, limit: int, offset: int)-> Optional[List[PixelModel]]:
+        return self.db.query(PixelModel).order_by(PixelModel.timestamps.desc()).offset(offset).limit(limit).all()
     
     def update_pixel(self, id: str, data: UpdatePixel)-> Optional[PixelModel]:
         pixel_db = self.db.query(PixelModel).filter(PixelModel.id == id).first()
@@ -35,3 +36,10 @@ class PixelRepoImpl(IPixelRepo):
         self.db.commit()
         self.db.refresh(pixel_db)
         return pixel_db
+    
+    def get_timestaps_decs(self) -> Optional[PixelModel]:
+        pixel_db = self.db.query(PixelModel).order_by(PixelModel.timestamps.desc()).first()
+        return pixel_db
+    
+    def get_latest_timestamp(self):
+        return self.db.query(func.max(PixelModel.timestamps)).scalar()

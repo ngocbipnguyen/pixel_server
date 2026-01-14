@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from src.models.collection_model import CollectionModel
 from typing import Optional, List
 from src.schemas.collection import UpdateCollection
+from sqlalchemy import func
 
 class CollectionRepoImpl(ICollectionRepo):
 
@@ -18,11 +19,11 @@ class CollectionRepoImpl(ICollectionRepo):
     def find(self,id: str)-> Optional[CollectionModel]:
         return self.db.query(CollectionModel).filter(CollectionModel.id == id).first()
     
-    def find_by_uui(self,uui: str)-> Optional[List[CollectionModel]]:
-        return self.db.query(CollectionModel).filter(CollectionModel.uui == uui).order_by(CollectionModel.timestamp_update.desc())
+    def find_by_uui(self,uui: str,limit: int, offset: int)-> Optional[List[CollectionModel]]:
+        return self.db.query(CollectionModel).filter(CollectionModel.uui == uui).order_by(CollectionModel.timestamp_update.desc()).offset(offset).limit(limit).all()
     
-    def get_all(self)-> Optional[List[CollectionModel]]:
-        return self.db.query(CollectionModel).order_by(CollectionModel.timestamp_update.desc()).all()
+    def get_all(self,limit: int, offset: int)-> Optional[List[CollectionModel]]:
+        return self.db.query(CollectionModel).order_by(CollectionModel.timestamp_update.desc()).offset(offset).limit(limit).all()
     
     def update(self, data: UpdateCollection) -> Optional[CollectionModel]:
         collectionModel = self.db.query(CollectionModel).filter(CollectionModel.id == data.id).first()
@@ -34,3 +35,10 @@ class CollectionRepoImpl(ICollectionRepo):
         self.db.commit()
         self.db.refresh(collectionModel)
         return collectionModel
+    
+    def get_timestaps_decs(self)-> Optional[CollectionModel]:
+        collectionModel = self.db.query(CollectionModel).order_by(CollectionModel.timestamp_update.desc()).first()
+        return collectionModel
+    
+    def get_latest_timestamp(self):
+        return self.db.query(func.max(CollectionModel.timestamp_update)).scalar()

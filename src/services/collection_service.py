@@ -15,11 +15,17 @@ class CollectionService():
     def find(self, id: str)-> Collection:
         return self.repo.find(id)
         
-    def find_by_uui(self, uui:str)-> List[Collection]:
-        return self.repo.find_by_uui(uui)
+    def find_by_uui(self, uui:str, limit: int, offset: int)-> List[Collection]:
+        return self.repo.find_by_uui(uui, limit=limit, offset=offset)
     
-    def get_all(self)-> List[Collection]:
-        return self.repo.get_all()
+    def get_all(self, limit: int, offset: int)-> List[Collection]:
+        return self.repo.get_all(limit=limit, offset=offset)
     
     def update(self, data: UpdateCollection): 
         return self.repo.update(data)
+    
+    def get_timestaps_decs(self):
+        return self.repo.get_timestaps_decs()
+    
+    def get_latest_timestamp(self):
+        return self.repo.get_latest_timestamp()
