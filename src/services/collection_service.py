@@ -29,3 +29,6 @@ class CollectionService():
     
     def get_latest_timestamp(self):
         return self.repo.get_latest_timestamp()
+    
+    def get_user_by_id(self, id: str):
+        return self.repo.get_user_by_id(id)

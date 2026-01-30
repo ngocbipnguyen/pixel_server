@@ -35,3 +35,8 @@ class UserRepoImpl(IUserRepo):
         self.db.commit()
         self.db.refresh(user)
         return user
+    
+    def find_token(self, token: str) -> Optional[UserModel]:
+        return self.db.query(UserModel).filter(UserModel.token == token).first()
+    
+    

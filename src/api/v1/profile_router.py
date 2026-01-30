@@ -27,7 +27,7 @@ def create(proflie: Profile, service: ProfileService = Depends(get_server), user
         ) 
 
 @profile_router.get("/uui", response_model= APIResponse[Profile])
-def find(params: ProfileParams, service: ProfileService = Depends(get_server), user_current: str = Depends(get_current_user)):
+def find(params: ProfileParams = Depends(), service: ProfileService = Depends(get_server), user_current: str = Depends(get_current_user)):
     result = service.find(uui= params.uui)
     if not result :
         return APIResponse.error_response(

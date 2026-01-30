@@ -31,7 +31,7 @@ def create(user: User, service: UserService = Depends(get_service)):
 
 
 @user_router.get("/uui", response_model= APIResponse[User])
-def find_by_uui(param: UserParams, service: UserService = Depends(get_service), user_current: str = Depends(get_current_user)):
+def find_by_uui(param: UserParams = Depends(), service: UserService = Depends(get_service), user_current: str = Depends(get_current_user)):
     if not param.uui:
         raise HTTPException(status_code=400, detail="UUI is required")
     result = service.find(uui= param.uui)
@@ -56,7 +56,7 @@ def login(request: LoginRequest, service: UserService = Depends(get_service)):
     return APIResponse.success_response(result, "Login successful")
 
 @user_router.post("/update", response_model= APIResponse[User])
-def update(data: UpdateUser, service: UserService = Depends(get_service),  user_current: str = Depends(get_current_user)):
+def update(data: UpdateUser = Depends(), service: UserService = Depends(get_service),  user_current: str = Depends(get_current_user)):
     result = service.update(data=data)
     if not result: 
         return APIResponse.error_response(
@@ -70,3 +70,16 @@ def update(data: UpdateUser, service: UserService = Depends(get_service),  user_
 def login_google(req: GoogleLoginRequest, service: UserService = Depends(get_service)):
     result = service.login_google(req.id_token)
     return APIResponse.success_response(result, "Login by google successful!")
+
+
+@user_router.get("/access_tokens", response_model= APIResponse[User])
+def find_by_token(param: UserParams = Depends(), service: UserService = Depends(get_service)):
+    if not param.token:
+        raise HTTPException(status_code=400, detail="Token is required")
+    result = service.find_token(token= param.token)
+    if not result:
+        return APIResponse.error_response(
+            message="User not found",
+            error=f"User with token {param.token} does not exist"
+        )
+    return APIResponse.success_response(result, "User retrieved successfully")

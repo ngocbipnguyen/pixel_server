@@ -47,6 +47,7 @@ class UpdateUser(BaseModel):
 class UserParams(BaseModel):
     uui: str | None = None
     email: str | None = None
+    token: str | None = None
 
 class ProfileParams(BaseModel):
     uui: str

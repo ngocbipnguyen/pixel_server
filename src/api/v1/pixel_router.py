@@ -28,7 +28,7 @@ def create(pixel: Pixel, service: PixelService = Depends(get_service), user_curr
         ) 
 
 @pixel_router.get("/id", response_model= APIResponse[Pixel])
-def find_by_id(param: PixelParams, service: PixelService = Depends(get_service), user_current: str = Depends(get_current_user)):
+def find_by_id(param: PixelParams = Depends(), service: PixelService = Depends(get_service), user_current: str = Depends(get_current_user)):
     result = service.find(id= param.id)
     if not result :
         return APIResponse.error_response(
@@ -38,14 +38,14 @@ def find_by_id(param: PixelParams, service: PixelService = Depends(get_service),
     return APIResponse.success_response(result, "Pixel retrieved successfully")
 
 @pixel_router.get("/id_collect", response_model= ListResponse[Pixel])
-def find_by_collect(param: PixelParams, service: PixelService = Depends(get_service), user_current: str = Depends(get_current_user)):
+def find_by_collect(param: PixelParams = Depends(), service: PixelService = Depends(get_service), user_current: str = Depends(get_current_user)):
     result = service.get_pixel_by_collection(id= param.collection_id, limit= param.limit, offset= param.offset)
     if not result:
         return ListResponse.create(result, "No pixel")
     return ListResponse.create(result, "Pixels retrieved successfully")
 
 @pixel_router.get("/", response_model= ListResponse[Pixel])
-def get_all(param: PixelParams, service: PixelService = Depends(get_service), user_current: str = Depends(get_current_user)):
+def get_all(param: PixelParams = Depends(), service: PixelService = Depends(get_service), user_current: str = Depends(get_current_user)):
     result = service.get_all(limit= param.limit, offset= param.offset)
     if not result:
         return ListResponse.create(result, "No pixel")
@@ -71,7 +71,7 @@ def get_timestaps_decs(service: PixelService = Depends(get_service), user_curren
         ) 
     return APIResponse.success_response(result, "Pixel retrieved successfully")
 
-@pixel_router.get("/timestamp", response_model= APIResponse[Pixel])
+@pixel_router.get("/timestamp", response_model= APIResponse[TimestampResponse])
 def get_latest_timestamp(service: PixelService = Depends(get_service), user_current: str = Depends(get_current_user)):
     result = service.get_latest_timestamp()
     result_time = TimestampResponse(timestamp= result)

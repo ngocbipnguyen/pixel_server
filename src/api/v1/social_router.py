@@ -26,7 +26,7 @@ def create(social: Social, service: SocialService = Depends(get_service), user_c
         ) 
 
 @social_router.get("/id", response_model= APIResponse[Social])
-def find_by_id(params: SocialParams, service: SocialService = Depends(get_service), user_current: str = Depends(get_current_user)):
+def find_by_id(params: SocialParams = Depends(), service: SocialService = Depends(get_service), user_current: str = Depends(get_current_user)):
     if not params.id:
         raise HTTPException(status_code=400, detail="UUI is required")
     result = service.find(id= params.id)
@@ -38,7 +38,7 @@ def find_by_id(params: SocialParams, service: SocialService = Depends(get_servic
     return APIResponse.success_response(result, "Social link retrieved successfully")
 
 @social_router.get("/uui", response_model= ListResponse[Social])
-def find_by_uui(params: SocialParams, service: SocialService = Depends(get_service), user_current: str = Depends(get_current_user)):
+def find_by_uui(params: SocialParams = Depends(), service: SocialService = Depends(get_service), user_current: str = Depends(get_current_user)):
     if not params.uui:
         raise HTTPException(status_code=400, detail="UUI is required")
     result = service.find_by_uui(uui= params.uui)    

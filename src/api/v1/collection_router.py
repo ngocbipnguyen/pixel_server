@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from src.services.collection_service import CollectionService
 from typing import List
 from src.api.v1.deps import get_current_user
+from src.schemas.user import User
 
 collection_router = APIRouter(prefix="/collect")
 
@@ -26,14 +27,14 @@ def create(colection: Collection, service: CollectionService = Depends(get_servi
         ) 
 
 @collection_router.get("/", response_model= ListResponse[Collection])
-def get_all(param: CollectionParams,service: CollectionService = Depends(get_service), user_current: str = Depends(get_current_user)):
+def get_all(param: CollectionParams = Depends(),service: CollectionService = Depends(get_service), user_current: str = Depends(get_current_user)):
     result = service.get_all(limit= param.limit, offset= param.offset)
     if not result:
         return ListResponse.create(result, "No collections")
     return ListResponse.create(result, "Collections retrieved successfully")
 
 @collection_router.get("/id", response_model= APIResponse[Collection])
-def find_by_id(param: CollectionParams,  service: CollectionService = Depends(get_service), user_current: str = Depends(get_current_user)):
+def find_by_id(param: CollectionParams = Depends(),  service: CollectionService = Depends(get_service), user_current: str = Depends(get_current_user)):
     result = service.find(id= param.id)
     if not result :
         return APIResponse.error_response(
@@ -43,7 +44,8 @@ def find_by_id(param: CollectionParams,  service: CollectionService = Depends(ge
     return APIResponse.success_response(result, "Collection retrieved successfully")
 
 @collection_router.get("/uui", response_model= ListResponse[Collection])
-def find_by_uui(param: CollectionParams,  service: CollectionService = Depends(get_service), user_current: str = Depends(get_current_user)):
+def find_by_uui(param: CollectionParams = Depends(),  service: CollectionService = Depends(get_service), user_current: str = Depends(get_current_user)):
+    print("find_by_uui", param)
     result = service.find_by_uui(uui= param.uui, limit= param.limit, offset= param.offset)
     if not result:
         return ListResponse.create(result, "No collections")
@@ -80,3 +82,15 @@ def get_latest_timestamp(service: CollectionService = Depends(get_service), user
             error= "result is null"
         ) 
     return APIResponse.success_response(result_time, "Collection retrieved successfully")
+
+@collection_router.get("/get_user_by_collection", response_model= APIResponse[User])
+def get_user_by_collection(param: CollectionParams = Depends(),  service: CollectionService = Depends(get_service), user_current: str = Depends(get_current_user)): 
+    print("get_user_by_collection", param)
+    result = service.get_user_by_id(param.id)
+    if not result :
+        return APIResponse.error_response(
+            message="Failed to get a collection",
+            error= "Id is null"
+        ) 
+    return APIResponse.success_response(result, "Collection retrieved successfully")
+

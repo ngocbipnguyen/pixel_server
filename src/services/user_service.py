@@ -35,7 +35,7 @@ class UserService:
 
         access_token = create_token(data= {"sub": user.uui})
         refresh_token = create_refresh_token(user.uui)
-        return TokenResponse(access_token= access_token, refresh_token= refresh_token)
+        return TokenResponse(access_token= access_token, refresh_token= refresh_token, token_type = user.uui)
     
     def update(self, data: UpdateUser): 
         return self.repo.update(data)
@@ -62,5 +62,8 @@ class UserService:
         access_token = create_token({"sub": user.uui})
         refresh_token = create_refresh_token(user.uui)
         return TokenResponse(access_token= access_token, refresh_token= refresh_token)
+    
+    def find_token(self, token: str) -> User:
+        return self.repo.find_token(token= token)
 
 

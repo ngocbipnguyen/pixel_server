@@ -4,6 +4,7 @@ from src.models.collection_model import CollectionModel
 from typing import Optional, List
 from src.schemas.collection import UpdateCollection
 from sqlalchemy import func
+from src.models.user_model import UserModel
 
 class CollectionRepoImpl(ICollectionRepo):
 
@@ -42,3 +43,10 @@ class CollectionRepoImpl(ICollectionRepo):
     
     def get_latest_timestamp(self):
         return self.db.query(func.max(CollectionModel.timestamp_update)).scalar()
+    
+    def get_user_by_id(self,id: str)-> Optional[UserModel]:
+        print("collectionModel.id", id)
+        collectionModel = self.db.query(CollectionModel).filter(CollectionModel.id == id).first()
+        print("collectionModel", collectionModel)
+        user = self.db.query(UserModel).filter(UserModel.uui == collectionModel.uui).first()
+        return user

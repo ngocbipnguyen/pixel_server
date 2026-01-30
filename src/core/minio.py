@@ -1,10 +1,10 @@
 from minio import Minio
 
-MINIO_ENDPOINT = "localhost:9000"
+MINIO_ENDPOINT = "192.84.101.124:9000"
 MINIO_ACCESS_KEY = "minioadmin"
 MINIO_SECRET_KEY = "minioadmin"
 MINIO_BUCKET = "media"
-MINIO_PUBLIC_URL = "http://localhost:9000"
+MINIO_PUBLIC_URL = "http://192.84.101.124:9000"
 
 minio_client = Minio(
     MINIO_ENDPOINT,
