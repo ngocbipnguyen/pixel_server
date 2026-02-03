@@ -56,7 +56,7 @@ def login(request: LoginRequest, service: UserService = Depends(get_service)):
     return APIResponse.success_response(result, "Login successful")
 
 @user_router.post("/update", response_model= APIResponse[User])
-def update(data: UpdateUser = Depends(), service: UserService = Depends(get_service),  user_current: str = Depends(get_current_user)):
+def update(data: UpdateUser, service: UserService = Depends(get_service),  user_current: str = Depends(get_current_user)):
     result = service.update(data=data)
     if not result: 
         return APIResponse.error_response(
